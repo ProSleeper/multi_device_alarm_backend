@@ -1,1 +1,29 @@
 # multi_device_alarm_backend
+
+# 최초 Initialize시 .env 파일 작성
+## 최초 코드를 clone이나 pull 했을 경우 .env파일이 존재하지 않기 때문에 직접 생성해줘야 한다.
+## 양식
+
+<!-- .env -->
+
+<!-- 서버 설정 -->
+<!-- PORT: 서버가 실행될 포트 번호 (기본값: 3000) -->
+PORT=3000
+
+<!-- HOST: 서버의 IP 주소 -->
+<!-- 같은 기기에서만 접속: localhost 또는 127.0.0.1 -->
+<!-- 같은 Wi-Fi 네트워크에서 접속: 192.168.x.x (실제 IP로 변경) -->
+<!-- 핫스팟으로 연결: 172.20.10.x (실제 IP로 변경) -->
+<!-- 모든 네트워크 인터페이스: 0.0.0.0 -->
+HOST=0.0.0.0
+
+<!-- JWT 시크릿 키 (보안을 위해 반드시 변경하세요!) -->
+<!-- 최소 32자 이상의 랜덤한 문자열 사용 권장 -->
+JWT_SECRET=my-super-secret-jwt-key-change-this-to-random-string-2024
+
+<!-- MySQL 데이터베이스 설정 ──────────────────────────────────────────────────── -->
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=test
+DB_PASSWORD=test
+DB_NAME=test_db

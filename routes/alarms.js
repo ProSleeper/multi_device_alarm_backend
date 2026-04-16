@@ -36,8 +36,9 @@ router.get('/', (req, res) => {
         repeat_year_day: alarm.repeat_year_day,
         specific_date: alarm.specific_date,
         sound_path: alarm.sound_path,
-        created_at: alarm.created_at, // 타임스탬프 추가
-        updated_at: alarm.updated_at, // 타임스탬프 추가
+        is_silent: Boolean(alarm.is_silent),
+        created_at: alarm.created_at,
+        updated_at: alarm.updated_at,
         is_synced: true,
         deleted: false
       }));
@@ -64,6 +65,7 @@ router.post('/', (req, res) => {
     repeat_year_day,
     specific_date,
     sound_path,
+    is_silent,
     created_at,  // 클라이언트에서 전송
     updated_at   // 클라이언트에서 전송
   } = req.body;
@@ -87,14 +89,14 @@ router.post('/', (req, res) => {
     `INSERT INTO alarms (
       user_id, hour, minute, label, is_enabled, repeat_days,
       skip_next_date, repeat_type, repeat_month_day, repeat_year_month,
-      repeat_year_day, specific_date, sound_path, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      repeat_year_day, specific_date, sound_path, is_silent, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      userId, 
-      hour, 
-      minute, 
-      label || '', 
-      is_enabled !== false ? 1 : 0, 
+      userId,
+      hour,
+      minute,
+      label || '',
+      is_enabled !== false ? 1 : 0,
       repeatDaysJson,
       skip_next_date || null,
       repeat_type || 'none',
@@ -103,6 +105,7 @@ router.post('/', (req, res) => {
       repeat_year_day || null,
       specific_date || null,
       sound_path || null,
+      is_silent ? 1 : 0,
       createdAtValue,
       updatedAtValue
     ],
@@ -142,6 +145,7 @@ router.post('/', (req, res) => {
           repeat_year_day: repeat_year_day || null,
           specific_date: specific_date || null,
           sound_path: sound_path || null,
+          is_silent: Boolean(is_silent),
           created_at: createdAtValue,
           updated_at: updatedAtValue
         }
@@ -167,6 +171,7 @@ router.put('/:id', (req, res) => {
     repeat_year_day,
     specific_date,
     sound_path,
+    is_silent,
     updated_at  // 클라이언트에서 전송 (중요!)
   } = req.body;
 
@@ -185,17 +190,17 @@ router.put('/:id', (req, res) => {
   const updatedAtValue = updated_at || new Date().toISOString();
 
   db.run(
-    `UPDATE alarms 
+    `UPDATE alarms
      SET hour = ?, minute = ?, label = ?, is_enabled = ?, repeat_days = ?,
          skip_next_date = ?, repeat_type = ?, repeat_month_day = ?,
          repeat_year_month = ?, repeat_year_day = ?, specific_date = ?,
-         sound_path = ?, updated_at = ?
+         sound_path = ?, is_silent = ?, updated_at = ?
      WHERE id = ? AND user_id = ?`,
     [
-      hour, 
-      minute, 
-      label || '', 
-      is_enabled ? 1 : 0, 
+      hour,
+      minute,
+      label || '',
+      is_enabled ? 1 : 0,
       repeatDaysJson,
       skip_next_date || null,
       repeat_type || 'none',
@@ -204,8 +209,9 @@ router.put('/:id', (req, res) => {
       repeat_year_day || null,
       specific_date || null,
       sound_path || null,
-      updatedAtValue,  // 클라이언트 타임스탬프 유지
-      alarmId, 
+      is_silent ? 1 : 0,
+      updatedAtValue,
+      alarmId,
       userId
     ],
     function(err) {
